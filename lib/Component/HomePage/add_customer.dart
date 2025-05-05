@@ -820,27 +820,27 @@ class OrderController extends GetxController {
       return;
     }
 
-    try {
-      final TableController tableController = Get.find<TableController>();
-      tableController.updateTableStatus(
-          tableNumber,
-          nameController.text,
-          totalAmount.value
-      );
-
-      Get.snackbar(
-        'Order Processed',
-        'Order for ${nameController.text} has been processed successfully',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-
-      Get.back();
-    } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Could not process order: $e',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    }
+    // try {
+    //   final TableController tableController = Get.find<TableController>();
+    //   tableController.updateTableStatus(
+    //       tableNumber,
+    //       nameController.text,
+    //       totalAmount.value
+    //   );
+    //
+    //   Get.snackbar(
+    //     'Order Processed',
+    //     'Order for ${nameController.text} has been processed successfully',
+    //     snackPosition: SnackPosition.BOTTOM,
+    //   );
+    //
+    //   Get.back();
+    // } catch (e) {
+    //   Get.snackbar(
+    //     'Error',
+    //     'Could not process order: $e',
+    //     snackPosition: SnackPosition.BOTTOM,
+    //   );
+    // }
   }
 }

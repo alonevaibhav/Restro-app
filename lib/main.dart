@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'API Service/api_client.dart';
 import 'RouteManager/app_bindings.dart';
 import 'RouteManager/app_routes.dart';
 import 'package:google_fonts/google_fonts.dart'; // Add this
 import 'package:flutter_screenutil/flutter_screenutil.dart'; // Import ScreenUtil
 
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await ApiService.init(); // 🔐 Required for shared_preferences
+  runApp(MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
