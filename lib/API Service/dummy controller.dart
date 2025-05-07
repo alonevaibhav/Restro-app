@@ -1,9 +1,8 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart';
-import 'api_client.dart'; // ApiService with token/uid logic
-import 'endpoints.dart'; // Your centralized endpoint definitions
+import 'package:get/get.dart';
+import 'api_service.dart';
+import 'endpoints.dart';
 
-// User model
 class User {
   final String id;
   final String name;
@@ -27,53 +26,46 @@ class User {
   }
 }
 
-class UserController extends ChangeNotifier {
-  List<User> _users = [];
-  User? _currentUser;
-  bool _isLoading = false;
-  String? _errorMessage;
+class DummyControllerForAPIService extends GetxController {
+  final users = <User>[].obs;
+  final currentUser = Rxn<User>();
+  final isLoading = false.obs;
+  final errorMessage = RxnString();
 
-  List<User> get users => _users;
-  User? get currentUser => _currentUser;
-  bool get isLoading => _isLoading;
-  String? get errorMessage => _errorMessage;
-
-  /// Login using email and password
+  /// Handles login and stores token/uid
   Future<void> login(String email, String password) async {
-    _setLoading(true);
+    isLoading(true);
+    errorMessage.value = null;
 
     final response = await ApiService.post<Map<String, dynamic>>(
       endpoint: AuthEndpoints.login,
-      body: {
-        'email': email,
-        'password': password,
-      },
-      fromJson: (json) => json as Map<String, dynamic>,
+      body: {'email': email, 'password': password},
+      fromJson: (json) => json,
+      includeToken: false, // 👈 token will NOT be sent
     );
 
     if (response.success && response.data != null) {
-      final data = response.data!;
-      final token = data['token'];
-      final user = data['user'];
+      final token = response.data!['token'];
+      final user = response.data!['user'];
 
       if (token != null && user != null) {
         await ApiService.setToken(token);
         await ApiService.setUid(user['id'].toString());
-
-        _currentUser = User.fromJson(user);
+        currentUser.value = User.fromJson(user);
       } else {
-        _errorMessage = 'Invalid login response.';
+        errorMessage.value = 'Invalid login response.';
       }
     } else {
-      _errorMessage = response.errorMessage ?? 'Login failed.';
+      errorMessage.value = response.errorMessage ?? 'Login failed.';
     }
 
-    _setLoading(false);
+    isLoading(false);
   }
 
-  /// Fetch current user's profile using UID
+  /// Fetch profile by ID (GET request)
   Future<void> fetchProfileById(String userId) async {
-    _setLoading(true);
+    isLoading(true);
+    errorMessage.value = null;
 
     final response = await ApiService.get<User>(
       endpoint: '${AuthEndpoints.fetchProfile}/$userId',
@@ -81,31 +73,28 @@ class UserController extends ChangeNotifier {
     );
 
     if (response.success && response.data != null) {
-      _currentUser = response.data!;
+      currentUser.value = response.data!;
     } else {
-      _errorMessage = response.errorMessage;
+      errorMessage.value = response.errorMessage;
     }
 
-    _setLoading(false);
+    isLoading(false);
   }
 
-  /// Update user profile (basic)
-  Future<void> updateProfile({
-    required String name,
-    required String email,
-  }) async {
-    if (_currentUser == null) {
-      _errorMessage = 'No user logged in';
-      notifyListeners();
+  /// Update user name and email (PUT request)
+  Future<void> updateProfile({required String name, required String email}) async {
+    if (currentUser.value == null) {
+      errorMessage.value = 'No user logged in';
       return;
     }
 
-    _setLoading(true);
+    isLoading(true);
+    errorMessage.value = null;
 
     final response = await ApiService.put<User>(
       endpoint: AuthEndpoints.update,
       body: {
-        'id': _currentUser!.id,
+        'id': currentUser.value!.id,
         'name': name,
         'email': email,
       },
@@ -113,87 +102,65 @@ class UserController extends ChangeNotifier {
     );
 
     if (response.success && response.data != null) {
-      _currentUser = response.data!;
+      currentUser.value = response.data!;
     } else {
-      _errorMessage = response.errorMessage;
+      errorMessage.value = response.errorMessage;
     }
 
-    _setLoading(false);
+    isLoading(false);
   }
 
-  /// Update with complex preferences
-  Future<void> updateProfileWithPreferences({
-    required String name,
-    required String email,
-    required List<String> interests,
-    Map<String, dynamic>? settings,
-  }) async {
-    if (_currentUser == null) {
-      _errorMessage = 'No current user logged in';
-      notifyListeners();
+  /// Delete user account (DELETE request)
+  Future<void> deleteUserAccount() async {
+    if (currentUser.value == null) {
+      errorMessage.value = 'No user logged in';
       return;
     }
 
-    _setLoading(true);
+    isLoading(true);
+    errorMessage.value = null;
 
-    final response = await ApiService.put<User>(
-      endpoint: AuthEndpoints.update,
-      body: {
-        'id': _currentUser!.id,
-        'name': name,
-        'email': email,
-        'interests': interests,
-        'settings': settings ?? {'notifications': true},
-      },
-      fromJson: (json) => User.fromJson(json),
+    final response = await ApiService.delete<void>(
+      endpoint: '${AuthEndpoints.register}/${currentUser.value!.id}',
+      fromJson: (json) => null,
     );
 
-    if (response.success && response.data != null) {
-      _currentUser = response.data!;
+    if (response.success) {
+      currentUser.value = null;
+      await ApiService.clearAuthData();
     } else {
-      _errorMessage = response.errorMessage;
+      errorMessage.value = response.errorMessage;
     }
 
-    _setLoading(false);
+    isLoading(false);
   }
 
-  /// Upload avatar for current user
+  /// Upload avatar using multipart request (Multipart POST request)
   Future<void> uploadAvatar(File avatarFile) async {
-    if (_currentUser == null) {
-      _errorMessage = 'No user logged in';
-      notifyListeners();
+    if (currentUser.value == null) {
+      errorMessage.value = 'No user logged in';
       return;
     }
 
-    _setLoading(true);
+    isLoading(true);
+    errorMessage.value = null;
 
-    final fields = {
-      'userId': _currentUser!.id,
-    };
-
-    final file = MultipartFile(
-      field: 'avatar',
-      filePath: avatarFile.path,
-    );
+    final fields = {'userId': currentUser.value!.id};
+    final file = MultipartFiles(field: 'avatar', filePath: avatarFile.path);
 
     final response = await ApiService.multipartPost<User>(
-      endpoint: 'architect/upload/avatar', // Adjust as per actual endpoint
+      endpoint: AuthEndpoints.login,
       fields: fields,
       files: [file],
       fromJson: (json) => User.fromJson(json),
     );
 
     if (response.success && response.data != null) {
-      _currentUser = response.data!;
+      currentUser.value = response.data!;
     } else {
-      _errorMessage = response.errorMessage;
+      errorMessage.value = response.errorMessage;
     }
 
-    _setLoading(false);
-  }
-
-  void _setLoading(bool value) {
-    _isLoading = value;
-    notifyListeners();
+    isLoading(false);
   }
 }

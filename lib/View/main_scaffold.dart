@@ -2,7 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../Controller/sidebar_controller.dart';
-import '../../Component/HomePage/header.dart';
+import '../../Component/WaiterHomePage/table_view.dart';
+import '../Component/WaiterHomePage/header.dart';
 import 'Homepage/side_bar.dart';
 
 class MainScaffold extends StatelessWidget {
@@ -20,6 +21,7 @@ class MainScaffold extends StatelessWidget {
             // Header + content
             Column(
               children: [
+                SizedBox(height:20 ,),
                 HotelHeader(),
                 Expanded(child: content),
               ],

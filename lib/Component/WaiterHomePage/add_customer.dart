@@ -1,376 +1,7 @@
-// import 'package:flutter/cupertino.dart';
-// import 'package:flutter_screenutil/flutter_screenutil.dart';
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-//
-// import '../../RouteManager/app_routes.dart';
-// import '../../View/main_scaffold.dart';
-// import 'add_dish.dart';
-//
-// class AddCustomer extends StatelessWidget {
-//   const AddCustomer({super.key});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     final int tableNumber = Get.arguments['tableNumber'];
-//
-//     return MainScaffold(
-//       content: OrderDetailView(tableNumber: tableNumber),
-//     );
-//   }
-// }
-//
-// class OrderDetailView extends StatelessWidget {
-//   final int tableNumber;
-//
-//   const OrderDetailView({Key? key, required this.tableNumber})
-//       : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     final OrderController controller = Get.put(OrderController());
-//
-//     return SafeArea(
-//       child: Padding(
-//         padding: EdgeInsets.all(11.2.w), // 16 * 0.7
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             // Header
-//             Row(
-//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//               children: [
-//                 Text(
-//                   'Recipient name :',
-//                   style: TextStyle(
-//                       fontSize: 11.2.sp,
-//                       fontWeight: FontWeight.w500), // 16 * 0.7
-//                 ),
-//                 Text(
-//                   'table no :- $tableNumber',
-//                   style:
-//                       TextStyle(fontSize: 11.2.sp, fontWeight: FontWeight.w500),
-//                 ),
-//               ],
-//             ),
-//             SizedBox(height: 8.4.h), // 12 * 0.7
-//
-//             // Name field
-//             TextField(
-//               controller: controller.nameController,
-//               decoration: InputDecoration(
-//                 hintText: 'Enter full name',
-//                 border: OutlineInputBorder(
-//                   borderRadius: BorderRadius.circular(5.6.r), // 8 * 0.7
-//                   borderSide: BorderSide(color: Colors.grey),
-//                 ),
-//                 contentPadding: EdgeInsets.symmetric(
-//                     horizontal: 8.4.w, vertical: 11.2.h), // 12 * 0.7
-//               ),
-//             ),
-//             SizedBox(height: 8.4.h),
-//
-//             // Phone field
-//             TextField(
-//               controller: controller.phoneController,
-//               keyboardType: TextInputType.phone,
-//               decoration: InputDecoration(
-//                 hintText: 'Phone number',
-//                 border: OutlineInputBorder(
-//                   borderRadius: BorderRadius.circular(5.6.r),
-//                   borderSide: BorderSide(color: Colors.grey),
-//                 ),
-//                 contentPadding:
-//                     EdgeInsets.symmetric(horizontal: 8.4.w, vertical: 11.2.h),
-//               ),
-//             ),
-//             SizedBox(height: 14.h), // 20 * 0.7
-//
-//             // Items Row
-//             Row(
-//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//               children: [
-//                 Text(
-//                   'Items :',
-//                   style:
-//                       TextStyle(fontSize: 11.2.sp, fontWeight: FontWeight.w500),
-//                 ),
-//                 Row(
-//                   children: [
-//                     OutlinedButton(
-//                       onPressed: () => controller.toggleUrgent(),
-//                       style: OutlinedButton.styleFrom(
-//                         side: BorderSide(color: Colors.grey),
-//                         shape: RoundedRectangleBorder(
-//                           borderRadius: BorderRadius.circular(14.r), // 20 * 0.7
-//                         ),
-//                       ),
-//                       child: Text('mark as urgent',
-//                           style: TextStyle(
-//                               color: Colors.black,
-//                               fontSize: 9.8.sp)), // 14 * 0.7
-//                     ),
-//                     SizedBox(width: 5.6.w), // 8 * 0.7
-//                     ElevatedButton(
-//                       onPressed: () {
-//                         Get.toNamed(AppRoutes.add_dish);
-//                       },
-//                       // controller.addItems(),
-//                       style: ElevatedButton.styleFrom(
-//                         backgroundColor: Colors.blue,
-//                         shape: RoundedRectangleBorder(
-//                           borderRadius: BorderRadius.circular(14.r),
-//                         ),
-//                       ),
-//                       child: InkWell(
-//                         child: Row(
-//                           children: [
-//                             Text('add items',
-//                                 style: TextStyle(
-//                                     color: Colors.white,
-//                                     fontSize: 9.8.sp)), // 14 * 0.7
-//                             SizedBox(width: 2.8.w), // 4 * 0.7
-//                             Icon(Icons.add,
-//                                 color: Colors.white, size: 12.6.sp), // 18 * 0.7
-//                           ],
-//                         ),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ],
-//             ),
-//             SizedBox(height: 8.4.h),
-//
-//             // Items List
-//             Expanded(
-//               child: Obx(() => controller.orderItems.isEmpty
-//                   ? Center(
-//                       child: Text(
-//                         'No items added yet',
-//                         style: TextStyle(
-//                             color: Colors.grey, fontSize: 9.8.sp), // 14 * 0.7
-//                       ),
-//                     )
-//                   : ListView.builder(
-//                       itemCount: controller.orderItems.length,
-//                       itemBuilder: (context, index) {
-//                         final item = controller.orderItems[index];
-//                         return ListTile(
-//                           title: Text(item.name,
-//                               style: TextStyle(fontSize: 10.5.sp)), // 15 * 0.7
-//                           subtitle: Text('₹${item.price.toStringAsFixed(2)}',
-//                               style: TextStyle(fontSize: 9.1.sp)), // 13 * 0.7
-//                           trailing: Text('Qty: ${item.quantity}',
-//                               style: TextStyle(fontSize: 9.1.sp)), // 13 * 0.7
-//                         );
-//                       },
-//                     )),
-//             ),
-//
-//             // Total & Buttons
-//             Container(
-//               padding: EdgeInsets.symmetric(
-//                   horizontal: 11.2.w, vertical: 8.4.h), // 16 * 0.7
-//               decoration: BoxDecoration(
-//                 border: Border(top: BorderSide(color: Colors.grey.shade300)),
-//               ),
-//               child: Column(
-//                 children: [
-//                   Container(
-//                     padding: EdgeInsets.symmetric(
-//                         horizontal: 11.2.w, vertical: 8.4.h), // 16 * 0.7
-//                     decoration: BoxDecoration(
-//                       color: Colors.grey.shade100,
-//                       borderRadius: BorderRadius.circular(5.6.r), // 8 * 0.7
-//                     ),
-//                     child: Row(
-//                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                       children: [
-//                         Text('Final Checkout Total',
-//                             style: TextStyle(
-//                                 fontWeight: FontWeight.bold,
-//                                 fontSize: 11.2.sp)), // 16 * 0.7
-//                         Obx(() => Text(
-//                               '₹ ${controller.totalAmount.value.toStringAsFixed(2)}',
-//                               style: TextStyle(
-//                                   fontWeight: FontWeight.bold,
-//                                   fontSize: 11.2.sp),
-//                             )),
-//                       ],
-//                     ),
-//                   ),
-//                   SizedBox(height: 8.4.h), // 12 * 0.7
-//
-//                   // Action buttons
-//                   Row(
-//                     children: [
-//                       Expanded(
-//                         child: OutlinedButton(
-//                           onPressed: () => controller.processKot(),
-//                           style: OutlinedButton.styleFrom(
-//                             padding: EdgeInsets.symmetric(
-//                                 vertical: 11.2.h), // 16 * 0.7
-//                             side: BorderSide(color: Colors.grey),
-//                           ),
-//                           child: Text('kot',
-//                               style: TextStyle(
-//                                   color: Colors.black,
-//                                   fontSize: 9.8.sp)), // 14 * 0.7
-//                         ),
-//                       ),
-//                       SizedBox(width: 5.6.w), // 8 * 0.7
-//                       Expanded(
-//                         child: ElevatedButton(
-//                           onPressed: () => controller.processOrder(),
-//                           style: ElevatedButton.styleFrom(
-//                             backgroundColor: Colors.blue,
-//                             padding: EdgeInsets.symmetric(
-//                                 vertical: 11.2.h), // 16 * 0.7
-//                           ),
-//                           child: Text('next',
-//                               style: TextStyle(
-//                                   color: Colors.white,
-//                                   fontSize: 9.8.sp)), // 14 * 0.7
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-//
-// // // lib/Controller/order_controller.dart
-// // import 'package:flutter/material.dart';
-// // import 'package:get/get.dart';
-//
-// class OrderItem {
-//   final String name;
-//   final double price;
-//   final int quantity;
-//
-//   OrderItem({
-//     required this.name,
-//     required this.price,
-//     required this.quantity,
-//   });
-// }
-//
-// class OrderController extends GetxController {
-//   // Text controllers for input fields
-//   final TextEditingController nameController = TextEditingController();
-//   final TextEditingController phoneController = TextEditingController();
-//
-//   // Observable variables
-//   RxBool isUrgent = false.obs;
-//   RxList<OrderItem> orderItems = <OrderItem>[].obs;
-//   RxDouble totalAmount = 0.0.obs;
-//
-//   @override
-//   void onInit() {
-//     super.onInit();
-//     // Initialize empty order
-//     calculateTotal();
-//   }
-//
-//   @override
-//   void onClose() {
-//     nameController.dispose();
-//     phoneController.dispose();
-//     super.onClose();
-//   }
-//
-//
-//
-//   void addItems() {
-//     Get.to(() => const ItemSelectionView())?.then((selectedItems) {
-//       if (selectedItems != null && selectedItems.isNotEmpty) {
-//         // Add selected items to the order
-//         for (MenuItem menuItem in selectedItems) {
-//           orderItems.add(OrderItem(
-//             name: menuItem.name,
-//             price: menuItem.price,
-//             quantity: menuItem.quantity.value,
-//           ));
-//         }
-//         calculateTotal();
-//       }
-//     });
-//   }
-//   void toggleUrgent() {
-//     isUrgent.value = !isUrgent.value;
-//   }
-//
-//
-//   void calculateTotal() {
-//     totalAmount.value = orderItems.fold(
-//       0.0,
-//       (sum, item) => sum + (item.price * item.quantity),
-//     );
-//   }
-//
-//   void processKot() {
-//     // KOT (Kitchen Order Ticket) processing logic
-//     Get.snackbar(
-//       'KOT Generated',
-//       'Kitchen Order Ticket has been sent to the kitchen',
-//       snackPosition: SnackPosition.BOTTOM,
-//     );
-//   }
-//
-//   void processOrder() {
-//     // Order processing logic
-//     if (orderItems.isEmpty) {
-//       Get.snackbar(
-//         'Empty Order',
-//         'Please add at least one item to proceed',
-//         snackPosition: SnackPosition.BOTTOM,
-//       );
-//       return;
-//     }
-//
-//     // Validate customer details
-//     if (nameController.text.isEmpty) {
-//       Get.snackbar(
-//         'Missing Information',
-//         'Please enter recipient name',
-//         snackPosition: SnackPosition.BOTTOM,
-//       );
-//       return;
-//     }
-//
-//     if (phoneController.text.isEmpty) {
-//       Get.snackbar(
-//         'Missing Information',
-//         'Please enter phone number',
-//         snackPosition: SnackPosition.BOTTOM,
-//       );
-//       return;
-//     }
-//
-//     // Process the order
-//     Get.snackbar(
-//       'Order Processed',
-//       'Your order has been processed successfully',
-//       snackPosition: SnackPosition.BOTTOM,
-//     );
-//
-//     // Navigate back or to next screen
-//     Get.back();
-//   }
-// }
-
-
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../Controller/table_controller.dart';
+import '../../Controller/timer_controller.dart';
 import '../../View/main_scaffold.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../RouteManager/app_routes.dart';
@@ -381,23 +12,63 @@ class AddCustomer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     final int tableNumber = Get.arguments['tableNumber'];
+    final String? customerName = Get.arguments['customerName'];
+    final double? orderAmount = Get.arguments['orderAmount'];
+    // FIX 1: Extract existingOrderItems from arguments
+    final List<OrderItem>? existingOrderItems = Get.arguments['existingOrderItems'];
 
     return MainScaffold(
-      content: OrderDetailView(tableNumber: tableNumber),
+      content: OrderDetailView(
+        tableNumber: tableNumber,
+        customerName: customerName,
+        orderAmount: orderAmount,
+        existingOrderItems: existingOrderItems, // FIX 2: Pass it to OrderDetailView
+      ),
     );
   }
 }
 
+
 class OrderDetailView extends StatelessWidget {
   final int tableNumber;
+  final String? customerName;
+  final double? orderAmount;
+  final List<OrderItem>? existingOrderItems;
 
-  const OrderDetailView({Key? key, required this.tableNumber})
-      : super(key: key);
+  const OrderDetailView({
+    Key? key,
+    required this.tableNumber,
+    this.customerName,
+    this.orderAmount,
+    this.existingOrderItems,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final OrderController controller = Get.put(OrderController(tableNumber));
+
+    // FIX 3: Log existing order items for debugging
+    if (existingOrderItems != null) {
+      print('Existing order items: ${existingOrderItems!.length}');
+    } else {
+      print('No existing order items');
+    }
+
+    // If existingOrderItems are provided, add them to the controller
+    if (existingOrderItems != null && existingOrderItems!.isNotEmpty) {
+      controller.orderItems.addAll(existingOrderItems!);
+      controller.calculateTotal();
+    }
+
+    // If customerName and orderAmount are not null, populate the fields
+    if (customerName != null) {
+      controller.nameController.text = customerName!;
+    }
+    if (orderAmount != null) {
+      controller.totalAmount.value = orderAmount!;
+    }
 
     return SafeArea(
       child: Padding(
@@ -417,7 +88,7 @@ class OrderDetailView extends StatelessWidget {
                 Text(
                   'Table no :- $tableNumber',
                   style:
-                  TextStyle(fontSize: 11.2.sp, fontWeight: FontWeight.w500),
+                  TextStyle(fontSize: 15.2.sp, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -475,7 +146,7 @@ class OrderDetailView extends StatelessWidget {
                     SizedBox(width: 5.6.w),
                     ElevatedButton(
                       onPressed: () {
-                        Get.toNamed(AppRoutes.add_dish)?.then((selectedItems) {
+                        Get.toNamed(AppRoutes.addDish)?.then((selectedItems) {
                           if (selectedItems != null) {
                             controller.addItemsFromSelection(selectedItems);
                           }
@@ -658,7 +329,7 @@ class OrderDetailView extends StatelessWidget {
                             padding: EdgeInsets.symmetric(
                                 vertical: 11.2.h),
                           ),
-                          child: Text('next',
+                          child: Text('Add Order',
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 9.8.sp)),
@@ -675,6 +346,8 @@ class OrderDetailView extends StatelessWidget {
     );
   }
 }
+
+
 
 // import 'package:get/get.dart';
 // import '../../Controller/table_controller.dart';
@@ -726,7 +399,7 @@ class OrderController extends GetxController {
             orderItems[existingIndex] = OrderItem(
               name: existing.name,
               price: existing.price,
-              quantity: menuItem.quantity.value,
+              quantity: existing.quantity + menuItem.quantity.value, // FIX 4: Add to existing quantity instead of replacing
             );
           } else {
             orderItems.add(OrderItem(
@@ -770,8 +443,7 @@ class OrderController extends GetxController {
 
   void calculateTotal() {
     totalAmount.value = orderItems.fold(
-      0.0,
-          (sum, item) => sum + (item.price * item.quantity),
+      0.0, (sum, item) => sum + (item.price * item.quantity),
     );
   }
 
@@ -802,45 +474,40 @@ class OrderController extends GetxController {
       return;
     }
 
-    if (nameController.text.isEmpty) {
+    try {
+      final TableController tableController = Get.find<TableController>();
+
+      // FIX 5: Update table with order items
+      tableController.updateTableWithOrderItems(
+          tableNumber,
+          nameController.text,
+          totalAmount.value,
+          orderItems.toList() // Pass the current order items to be saved
+      );
+
       Get.snackbar(
-        'Missing Information',
-        'Please enter recipient name',
+        'Order Processed',
+        'Order for ${nameController.text} has been processed successfully',
         snackPosition: SnackPosition.BOTTOM,
       );
-      return;
-    }
 
-    if (phoneController.text.isEmpty) {
+      // ✅ Start timer only if no existing items (i.e., it's a NEW order)
+      final OrderTimerController orderTimerController = Get.find<OrderTimerController>();
+      if (Get.arguments['existingOrderItems'] == null) {
+        orderTimerController.startTimer(tableNumber);
+      }
+
+
+
+      Get.offNamed(AppRoutes.homepage);
+
+
+    } catch (e) {
       Get.snackbar(
-        'Missing Information',
-        'Please enter phone number',
+        'Error',
+        'Could not process order: $e',
         snackPosition: SnackPosition.BOTTOM,
       );
-      return;
     }
-
-    // try {
-    //   final TableController tableController = Get.find<TableController>();
-    //   tableController.updateTableStatus(
-    //       tableNumber,
-    //       nameController.text,
-    //       totalAmount.value
-    //   );
-    //
-    //   Get.snackbar(
-    //     'Order Processed',
-    //     'Order for ${nameController.text} has been processed successfully',
-    //     snackPosition: SnackPosition.BOTTOM,
-    //   );
-    //
-    //   Get.back();
-    // } catch (e) {
-    //   Get.snackbar(
-    //     'Error',
-    //     'Could not process order: $e',
-    //     snackPosition: SnackPosition.BOTTOM,
-    //   );
-    // }
   }
 }

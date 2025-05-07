@@ -9,6 +9,7 @@ import 'package:path/path.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
 class ApiResponse<T> {
   final bool success;
   final T? data;
@@ -24,6 +25,7 @@ class ApiResponse<T> {
 }
 
 class ApiService {
+
   static const String baseUrl = 'https://b-designer-api.vercel.app/';
   static const Duration _timeoutDuration = Duration(seconds: 30);
 
@@ -52,6 +54,7 @@ class ApiService {
   }
 
   // ==================== Header Builder ====================
+
   static Map<String, String> _getHeaders({bool includeToken = true}) {
     final token = includeToken ? getToken() : null;
     return {
@@ -62,6 +65,7 @@ class ApiService {
   }
 
   // ==================== Base API Methods ====================
+
   static Future<ApiResponse<T>> get<T>({
     required String endpoint,
     Map<String, dynamic>? queryParams,
@@ -135,7 +139,7 @@ class ApiService {
   static Future<ApiResponse<T>> multipartPost<T>({
     required String endpoint,
     required Map<String, String> fields,
-    required List<MultipartFile> files,
+    required List<MultipartFiles> files,
     required T Function(dynamic) fromJson,
     bool includeToken = true,
   }) async {
@@ -173,6 +177,7 @@ class ApiService {
   }
 
   // ==================== Response Handling ====================
+
   static Future<ApiResponse<T>> _sendRequest<T>({
     required String method,
     required Uri uri,
@@ -283,7 +288,7 @@ class ApiService {
     }
   }
 
-  static void _logFiles(List<MultipartFile> files) {
+  static void _logFiles(List<MultipartFiles> files) {
     if (kDebugMode) {
       print('┌───────────────────────────────────────────────────');
       print('│ 📎 UPLOADING FILES:');
@@ -340,12 +345,12 @@ class ApiService {
   }
 }
 
-class MultipartFile {
+class MultipartFiles {
   final String field;
   final String filePath;
   final MediaType contentType;
 
-  MultipartFile({
+  MultipartFiles({
     required this.field,
     required this.filePath,
     MediaType? contentType,
@@ -392,3 +397,10 @@ class MultipartFile {
 // fromJson: (json) => User.fromJson(json),
 // includeToken: false, // 👈 token will NOT be sent
 // );
+
+
+
+// //it used in simgle dataset come
+// fromJson: (json) => User.fromJson(json),
+// //it used when arrey come
+// fromJson: (jsonList) {return (jsonList as List).map((item) => Product.fromJson(item)).toList();},
