@@ -16,7 +16,6 @@ class AddCustomer extends StatelessWidget {
     final int tableNumber = Get.arguments['tableNumber'];
     final String? customerName = Get.arguments['customerName'];
     final double? orderAmount = Get.arguments['orderAmount'];
-    // FIX 1: Extract existingOrderItems from arguments
     final List<OrderItem>? existingOrderItems = Get.arguments['existingOrderItems'];
 
     return MainScaffold(
@@ -48,6 +47,11 @@ class OrderDetailView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final OrderController controller = Get.put(OrderController(tableNumber));
+
+    // Load the urgent state from the TableData
+    final TableController tableController = Get.find<TableController>();
+    final tableData = tableController.tables.firstWhere((table) => table.number == tableNumber);
+    controller.isUrgent.value = tableData.isUrgent;
 
     // FIX 3: Log existing order items for debugging
     if (existingOrderItems != null) {
@@ -130,19 +134,25 @@ class OrderDetailView extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    OutlinedButton(
+                    Obx(() => OutlinedButton(
                       onPressed: () => controller.toggleUrgent(),
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.grey),
+                        side: BorderSide(color: controller.isUrgent.value ? Colors.red : Colors.grey),
+                        backgroundColor: controller.isUrgent.value ? Colors.red.withOpacity(0.1) : Colors.transparent,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14.r),
                         ),
                       ),
-                      child: Text('mark as urgent',
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 9.8.sp)),
-                    ),
+                      child: Text(
+                        controller.isUrgent.value ? 'Urgent' : 'Mark as Urgent',
+                        style: TextStyle(
+                          color: controller.isUrgent.value ? Colors.red : Colors.black,
+                          fontSize: 9.8.sp,
+                        ),
+                      ),
+                    )),
+
+
                     SizedBox(width: 5.6.w),
                     ElevatedButton(
                       onPressed: () {
@@ -439,7 +449,12 @@ class OrderController extends GetxController {
 
   void toggleUrgent() {
     isUrgent.value = !isUrgent.value;
+
+    // Update the table data in the TableController
+    final TableController tableController = Get.find<TableController>();
+    tableController.updateTableUrgentStatus(tableNumber, isUrgent.value);
   }
+
 
   void calculateTotal() {
     totalAmount.value = orderItems.fold(

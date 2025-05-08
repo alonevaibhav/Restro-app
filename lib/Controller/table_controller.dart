@@ -11,6 +11,7 @@ class TableData {
   String customerName;
   bool isReady;
   bool isServed;
+  bool isUrgent; // <-- New field
   List<OrderItem> orderItems; // This needs to store order items
 
   TableData({
@@ -21,6 +22,7 @@ class TableData {
     this.customerName = '',
     this.isReady = false,
     this.isServed = false,
+    this.isUrgent = false, // <-- Initialize it
     this.orderItems = const [], // Initialize with an empty list
   });
 }
@@ -67,7 +69,9 @@ class TableController extends GetxController {
             customerName: 'Customer ${index + 1}',
             isReady: true,
             isServed: false,
-          ),
+
+
+              ),
         );
       }
 
@@ -79,6 +83,15 @@ class TableController extends GetxController {
     selectedTab.value = tab;
     fetchTables();
   }
+
+  void updateTableUrgentStatus(int tableNumber, bool isUrgent) {
+    final index = tables.indexWhere((table) => table.number == tableNumber);
+    if (index != -1) {
+      tables[index].isUrgent = isUrgent;
+      tables.refresh(); // Refresh the list to update UI
+    }
+  }
+
 
   void selectTable(int tableNumber) {
     // Find the selected table
@@ -105,6 +118,7 @@ class TableController extends GetxController {
             'customerName': selectedTable.customerName,
             'orderAmount': selectedTable.price,
             'existingOrderItems': selectedTable.orderItems, // Pass existing order items
+
           }
       );
     }
