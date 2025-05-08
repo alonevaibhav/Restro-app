@@ -16,6 +16,7 @@ class AddCustomer extends StatelessWidget {
     final int tableNumber = Get.arguments['tableNumber'];
     final String? customerName = Get.arguments['customerName'];
     final double? orderAmount = Get.arguments['orderAmount'];
+    // FIX 1: Extract existingOrderItems from arguments
     final List<OrderItem>? existingOrderItems = Get.arguments['existingOrderItems'];
 
     return MainScaffold(
@@ -52,6 +53,7 @@ class OrderDetailView extends StatelessWidget {
     final TableController tableController = Get.find<TableController>();
     final tableData = tableController.tables.firstWhere((table) => table.number == tableNumber);
     controller.isUrgent.value = tableData.isUrgent;
+
 
     // FIX 3: Log existing order items for debugging
     if (existingOrderItems != null) {
@@ -151,8 +153,6 @@ class OrderDetailView extends StatelessWidget {
                         ),
                       ),
                     )),
-
-
                     SizedBox(width: 5.6.w),
                     ElevatedButton(
                       onPressed: () {
