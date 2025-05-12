@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart';
@@ -21,7 +19,6 @@ class UserModel {
 
 /// Controller for login logic and location
 class LoginController extends GetxController {
-
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final rememberMe = false.obs;
@@ -32,7 +29,7 @@ class LoginController extends GetxController {
   /// In-memory user store; replace with real API/Firebase in production
   final List<UserModel> _users = [
     UserModel(username: 'waiter1', password: 'wpass123', role: 'waiter'),
-    UserModel(username: 'chef1',   password: 'cpass123', role: 'chef'),
+    UserModel(username: 'chef1', password: 'cpass123', role: 'chef'),
   ];
 
   @override
@@ -72,7 +69,7 @@ class LoginController extends GetxController {
     }
 
     final user = _users.firstWhereOrNull(
-          (u) => u.username == userName && u.password == pwd,
+      (u) => u.username == userName && u.password == pwd,
     );
 
     if (user == null) {
@@ -105,7 +102,7 @@ class LoginController extends GetxController {
         break;
       default:
         print('Navigating to login screen');
-        Get.offAllNamed(AppRoutes.login);
+
     }
   }
 
@@ -175,7 +172,7 @@ class LoginController extends GetxController {
         // print('Sub Thoroughfare: ${place.subThoroughfare}');
 
         currentAddress.value =
-        '${place.name}, ${place.locality}, ${place.administrativeArea}, ${place.country}';
+            '${place.name}, ${place.locality}, ${place.administrativeArea}, ${place.country}';
       } else {
         currentAddress.value = 'No placemarks found';
       }

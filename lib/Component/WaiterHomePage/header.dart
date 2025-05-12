@@ -4,10 +4,11 @@ import 'package:get/get.dart';
 import '../../Controller/login_controller.dart';
 import '../../Controller/sidebar_controller.dart';
 import '../../RouteManager/app_routes.dart';
+import '../../View/Auth/auth_page.dart';
 
 class HotelHeader extends StatelessWidget {
   HotelHeader({super.key});
-  final sidebarController = Get.find<SidebarController>();
+  final SidebarController sidebarController = Get.find<SidebarController>();
   final LoginController loginController = Get.find<LoginController>();
 
   // Function to build hotel name and address from currentAddress
@@ -78,8 +79,8 @@ class HotelHeader extends StatelessWidget {
           const SizedBox(width: 16),
           ElevatedButton(
             onPressed: () {
+              Get.offAll(() => LoginView());
 
-              Get.offAllNamed(AppRoutes.login);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.teal,
